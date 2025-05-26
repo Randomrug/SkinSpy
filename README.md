@@ -5,6 +5,11 @@ Catch the Cancer with CNN.
 
 SkinSpy is a web application that uses a deep learning model to classify suspicious skin spots as benign, malignant, insect bite, or no concern. It aims to promote skin cancer awareness by helping users distinguish between harmless skin issues and potentially dangerous ones.
 
+_______________________________________________
+#Architecture
+
+This system uses a dual-model cascade architecture featuring a custom Keras CNN for initial skin lesion classification (benign/malignant/insect_bite/no_bites) and a specialized PyTorch CNN for detailed insect bite analysis. When the Keras model detects an insect bite, the PyTorch model performs fine-grained classification into two clinically distinct categories: TS (Tick/Spider) and ABCF (Ant/Bedbug/Chigger/Flea). This separation addresses the visual similarity of bite patterns while maintaining diagnostic relevance - TS bites typically show singular puncture wounds with localized reactions, while ABCF bites exhibit clustered patterns with diffuse irritation. The PyTorch model's architecture (Conv2D+ReLU+MaxPool blocks followed by FC layers) is optimized to distinguish these subtle morphological differences. The entire pipeline supports dynamic GPU/CPU inference with robust error handling and model integrity checks.
+
 ───────────────────────────────────────────────
 
 💻 How to Run This Project
