@@ -1,1 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 SKIN SPY - Spot or Not?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --neon-purple: #d946ef;
+            --electric-blue: #3b82f6;
+            --toxic-green: #10b981;
+            --panic-red: #ef4444;
+            --yikes-yellow: #f59e0b;
+        }
+        
+        body {
+            background: #0f172a;
+            font-family: 'Comic Neue', cursive;
+            height: 100vh;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(217, 70, 239, 0.2) 0%, transparent 25%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.2) 0%, transparent 25%);
+        }
+        
+        .title {
+            font-family: 'Bungee', cursive;
+            background: linear-gradient(45deg, var(--neon-purple), var(--electric-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(217, 70, 239, 0.5);
+            letter-spacing: 2px;
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--electric-blue);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        .disclaimer {
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px dashed var(--yikes-yellow);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-box {
+            background: rgba(17, 24, 39, 0.8);
+            border: 3px dashed var(--electric-blue);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .upload-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(217, 70, 239, 0.4);
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 2rem;
+            border: 2px dashed var(--neon-purple);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+        
+        .file-input-label:hover {
+            background: rgba(217, 70, 239, 0.1);
+            border-color: var(--toxic-green);
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(45deg, var(--neon-purple), var(--electric-blue));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-family: 'Bungee', cursive;
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.5);
+            width: 100%;
+        }
+        
+        .analyze-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+        }
+        
+        .preview-img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border: 3px solid var(--neon-purple);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(217, 70, 239, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .preview-img:hover {
+            transform: rotate(1deg);
+            filter: hue-rotate(20deg);
+        }
+        
+        .probability-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+        
+        .probability-item {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.7);
+            padding: 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .probability-item:hover {
+            transform: translateX(5px);
+            background: rgba(30, 41, 59, 0.9);
+        }
+        
+        .probability-label {
+            width: 180px;
+            font-weight: bold;
+            color: var(--electric-blue);
+            font-size: 1rem;
+        }
+        
+        .probability-bar-container {
+            flex-grow: 1;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .probability-bar {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: white;
+            transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .probability-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.3) 0%, 
+                rgba(255,255,255,0) 100%);
+        }
+        
+        .prediction-card {
+            background: rgba(17, 24, 39, 0.9);
+            border-left: 5px solid var(--neon-purple);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prediction-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(217, 70, 239, 0.1), 
+                rgba(59, 130, 246, 0.1), 
+                rgba(16, 185, 129, 0.1));
+            z-index: -1;
+        }
+        
+        .prediction-text {
+            font-family: 'Bungee', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .danger-alert {
+            animation: pulse 0.8s infinite alternate;
+            border-left: 5px solid var(--panic-red) !important;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+            100% { transform: scale(1.02); box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--electric-blue);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-box {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid var(--panic-red);
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 1rem;
+            animation: shake 0.5s linear infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .main-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="main-container">
+        <header class="text-center pt-4">
+            <h1 class="title">🔍 SKIN SPY</h1>
+            <div class="tagline">Not Every Spot Is Just a Dot — Let SkinSpy Decide</div>
+            <div class="disclaimer">⚠️ Not a doctor, but will pretend to be one on the internet</div>
+        </header>
 
+        <div class="content-wrapper container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-5">
+                    <div class="upload-box">
+                        <h4 style="color: var(--yikes-yellow); margin-bottom: 1.5rem;">UPLOAD SUSPICIOUS SPOT</h4>
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <input type="file" id="fileInput" accept=".jpg,.jpeg,.png" class="d-none">
+                            <label for="fileInput" class="file-input-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--neon-purple); height: 3rem; width: 3rem;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <div style="color: var(--electric-blue);">Click to upload image</div>
+                                <div style="color: var(--neon-purple); font-size: 0.9rem;">JPG, PNG, JPEG accepted</div>
+                            </label>
+                            <button type="submit" class="analyze-btn">ANALYZE MYSTERY SPOT</button>
+                        </form>
+                    </div>
+                    
+                    <div style="background: rgba(17, 24, 39, 0.8); border-radius: 10px; padding: 1rem; height: 300px; display: flex; align-items: center; justify-content: center;">
+                        <img id="previewImage" class="preview-img" src="" alt="Your skin mystery" style="display: none;">
+                        <div id="imagePlaceholder" style="text-align: center; color: var(--electric-blue);">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="height: 4rem; width: 4rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p>Your suspect will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="col-md-7">
+                    <div id="loadingSpinner" style="display: none; text-align: center; padding: 2rem;">
+                        <div class="loading-spinner"></div>
+                        <p style="color: var(--electric-blue); margin-top: 1rem; font-size: 1.2rem;">Scanning for skin crimes...</p>
+                    </div>
+                    
+                    <div id="resultsContainer" style="display: none;">
+                        <!-- Probability Bars at the Top -->
+                        <div style="background: rgba(17, 24, 39, 0.8); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <h4 style="color: var(--toxic-green); margin-bottom: 1rem; font-size: 1.3rem;">📊 SUSPICION METER</h4>
+                            <div id="probabilityBars" class="probability-container"></div>
+                        </div>
+                        
+                        <!-- Prediction Card -->
+                        <div id="predictionCard" class="prediction-card">
+                            <h4 style="color: var(--neon-purple); margin-bottom: 1rem; font-size: 1.3rem;">🔍 VERDICT</h4>
+                            <div class="d-flex align-items-center mb-2">
+                                <span id="predictionEmoji" style="font-size: 2rem; margin-right: 1rem;"></span>
+                                <span id="predictionText" class="prediction-text"></span>
+                            </div>
+                            <div style="color: var(--yikes-yellow); font-family: 'Bungee', cursive; font-size: 1.2rem;">
+                                Confidence: <span id="predictionConfidence"></span>%
+                            </div>
+                            
+                            <div id="diagnosisMessage" style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                <p id="diagnosisText" style="margin-bottom: 0; font-size: 1.1rem;"></p>
+                            </div>
+                            
+                            <div id="careResources" style="margin-top: 1.5rem; display: none;">
+                                <h5 style="color: var(--electric-blue); margin-bottom: 1rem; font-size: 1.2rem;">🩺 SKIN FIRST AID</h5>
+                                <div id="resourcesList" class="probability-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="errorAlert" class="error-box" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Diagnosis data with your personalized messages
+        const diagnosisData = {
+            'benign': {
+                emoji: '😌',
+                title: 'NO DRAMA',
+                message: 'No worries! It\'s Benign — just a freckle trying to be dramatic! But do keep an eye on it — even harmless things deserve a little attention.',
+                color: '#10b981',
+                resources: [
+                    {
+                        title: 'Cleveland Clinic – Skin Lesions Overview',
+                        url: 'https://my.clevelandclinic.org/health/diseases/24296-skin-lesions',
+                        description: 'Comprehensive info on benign skin lesions'
+                    }
+                ]
+            },
+            'malignant': {
+                emoji: '🚨',
+                title: 'YIKES MODE',
+                message: '⚠️ Alert: Malignant spotted! This could be serious. Don\'t panic, but definitely consult a dermatologist ASAP.',
+                color: '#ef4444',
+                resources: [
+                    {
+                        title: 'Mayo Clinic – Skin Cancer Treatment',
+                        url: 'https://www.mayoclinic.org/diseases-conditions/skin-cancer/diagnosis-treatment/drc-20377608',
+                        description: 'Skin cancer diagnosis & treatment options'
+                    }
+                ]
+            },
+            'ABCF (Insect Bite)': {
+                emoji: '🐜',
+                title: 'BUG ATTACK',
+                message: 'It\'s a classic ABCF bite — Ants, Bugs, Chiggers, or Fleas! These critters may be tiny, but they sure pack a punch. Calamine lotion to the rescue!',
+                color: '#f59e0b',
+                resources: [
+                    {
+                        title: 'Bug Bite Identification Guide',
+                        url: 'https://www.healthline.com/health/bug-bites',
+                        description: 'Who bit you and why they\'re rude'
+                    }
+                ]
+            },
+            'TS (Insect Bite)': {
+                emoji: '🕷️',
+                title: 'NOPE NOPE',
+                message: 'Yikes! It\'s a Tick or Spider bite 🕷️🕸️ Nature really came for you. Clean it well, and watch for symptoms like swelling or fever!',
+                color: '#d946ef',
+                resources: [
+                    {
+                        title: 'CDC – Tick Bite Guide',
+                        url: 'https://www.cdc.gov/ticks/pdfs/FS_TickBite-508.pdf',
+                        description: 'Official tick bite guidelines'
+                    },
+                    {
+                        title: 'Spider Bite First Aid',
+                        url: 'https://www.healthline.com/health/spider-bites',
+                        description: 'When to worry about spider frenemies'
+                    }
+                ]
+            },
+            'no_bites': {
+                emoji: '✅',
+                title: 'CHILL ZONE',
+                message: 'False alarm! No insect bites or suspicious spots here 🚫🦟 Your skin is clean as a whistle. Stay moisturized and carry on!',
+                color: '#3b82f6',
+                resources: []
+            }
+        };
+
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const errorAlert = document.getElementById('errorAlert');
+            const previewImage = document.getElementById('previewImage');
+            const imagePlaceholder = document.getElementById('imagePlaceholder');
+            
+            if (!fileInput.files.length) {
+                showError('HELLO? You forgot to upload something!');
+                return;
+            }
+            
+            // Reset UI
+            errorAlert.style.display = 'none';
+            resultsContainer.style.display = 'none';
+            loadingSpinner.style.display = 'block';
+            previewImage.style.display = 'block';
+            imagePlaceholder.style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingSpinner.style.display = 'none';
+                
+                if (data.error) {
+                    showError('SkinSpy malfunction! ' + data.error);
+                    return;
+                }
+                
+                // Determine final prediction
+                const finalPrediction = data.refined_prediction || data.initial_prediction;
+                const displayPrediction = finalPrediction === 'abcf' ? 'ABCF (Insect Bite)' : 
+                                         finalPrediction === 'ts' ? 'TS (Insect Bite)' : 
+                                         finalPrediction.replace('_', ' ');
+                const finalConfidence = data.refined_confidence || data.initial_confidence;
+                
+                // Get diagnosis info
+                const diagnosisInfo = diagnosisData[displayPrediction] || diagnosisData['benign'];
+                
+                // Update prediction display
+                document.getElementById('predictionEmoji').textContent = diagnosisInfo.emoji;
+                document.getElementById('predictionText').textContent = diagnosisInfo.title;
+                document.getElementById('predictionText').style.color = diagnosisInfo.color;
+                document.getElementById('predictionConfidence').textContent = finalConfidence.toFixed(1);
+                
+                // Update diagnosis message
+                document.getElementById('diagnosisText').textContent = diagnosisInfo.message;
+                
+                // Update probability bars
+                const probsToShow = data.refined_probs || data.initial_probs;
+                const probabilitiesDiv = document.getElementById('probabilityBars');
+                probabilitiesDiv.innerHTML = '';
+                
+                for (const [className, prob] of Object.entries(probsToShow)) {
+                    const displayName = className === 'abcf' ? 'ABCF (Insect Bite)' : 
+                                       className === 'ts' ? 'TS (Insect Bite)' : 
+                                       className.replace('_', ' ');
+                    
+                    const barColor = className === 'benign' ? '#10b981' :
+                                    className === 'malignant' ? '#ef4444' :
+                                    className === 'abcf' ? '#f59e0b' :
+                                    className === 'ts' ? '#d946ef' :
+                                    '#3b82f6';
+                    
+                    const barDiv = document.createElement('div');
+                    barDiv.className = 'probability-item';
+                    
+                    const labelSpan = document.createElement('div');
+                    labelSpan.className = 'probability-label';
+                    labelSpan.textContent = displayName;
+                    
+                    const barContainer = document.createElement('div');
+                    barContainer.className = 'probability-bar-container';
+                    
+                    const bar = document.createElement('div');
+                    bar.className = 'probability-bar';
+                    bar.style.width = '0%';
+                    bar.style.backgroundColor = barColor;
+                    bar.textContent = `${prob.toFixed(1)}%`;
+                    
+                    barContainer.appendChild(bar);
+                    barDiv.appendChild(labelSpan);
+                    barDiv.appendChild(barContainer);
+                    probabilitiesDiv.appendChild(barDiv);
+                    
+                    // Animate the bar
+                    setTimeout(() => {
+                        bar.style.width = `${prob}%`;
+                    }, 100);
+                }
+                
+                // Update care resources
+                const careResources = document.getElementById('careResources');
+                const resourcesList = document.getElementById('resourcesList');
+                resourcesList.innerHTML = '';
+                
+                if (diagnosisInfo.resources.length > 0) {
+                    careResources.style.display = 'block';
+                    diagnosisInfo.resources.forEach(resource => {
+                        const resourceDiv = document.createElement('div');
+                        resourceDiv.className = 'probability-item';
+                        resourceDiv.innerHTML = `
+                            <div style="width: 100%;">
+                                <a href="${resource.url}" target="_blank" style="color: var(--electric-blue); font-weight: bold;">${resource.title}</a>
+                                <div style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem;">${resource.description}</div>
+                            </div>
+                        `;
+                        resourcesList.appendChild(resourceDiv);
+                    });
+                } else {
+                    careResources.style.display = 'none';
+                }
+                
+                // Show results
+                resultsContainer.style.display = 'block';
+                
+                // Special effects for malignant
+                if (finalPrediction === 'malignant') {
+                    document.getElementById('predictionCard').classList.add('danger-alert');
+                } else {
+                    document.getElementById('predictionCard').classList.remove('danger-alert');
+                }
+                
+                // Confetti for high confidence
+                if (finalConfidence > 90) {
+                    throwConfetti();
+                }
+            })
+            .catch(error => {
+                loadingSpinner.style.display = 'none';
+                showError('SkinSpy crashed harder than your last diet! Try again?');
+                console.error(error);
+            });
+        });
+        
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.textContent = message;
+            errorAlert.style.display = 'block';
+            
+            setTimeout(() => {
+                errorAlert.style.display = 'none';
+            }, 5000);
+        }
+        
+        function throwConfetti() {
+            const colors = ['#d946ef', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '9999';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fall {
+                    to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Preview image when selected
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const previewImage = document.getElementById('previewImage');
+                const imagePlaceholder = document.getElementById('imagePlaceholder');
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImage.src = event.target.result;
+                    previewImage.style.display = 'block';
+                    imagePlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
