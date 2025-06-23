@@ -5,12 +5,9 @@ Catch the Cancer with CNN.
 
 SkinSpy is a web application that uses a deep learning model to classify suspicious skin spots as benign, malignant, insect bite, or no concern. It aims to promote skin cancer awareness by helping users distinguish between harmless skin issues and potentially dangerous ones.
 
-_______________________________________________
 #Architecture
 
 This system uses a dual-model cascade architecture featuring a custom Keras CNN for initial skin lesion classification (benign/malignant/insect_bite/no_bites) and a specialized PyTorch CNN for detailed insect bite analysis. When the Keras model detects an insect bite, the PyTorch model performs fine-grained classification into two clinically distinct categories: TS (Tick/Spider) and ABCF (Ant/Bedbug/Chigger/Flea). This separation addresses the visual similarity of bite patterns while maintaining diagnostic relevance - TS bites typically show singular puncture wounds with localized reactions, while ABCF bites exhibit clustered patterns with diffuse irritation. The PyTorch model's architecture (Conv2D+ReLU+MaxPool blocks followed by FC layers) is optimized to distinguish these subtle morphological differences. The entire pipeline supports dynamic GPU/CPU inference with robust error handling and model integrity checks.
-
-───────────────────────────────────────────────
 
 💻 How to Run This Project
 
@@ -20,9 +17,8 @@ This system uses a dual-model cascade architecture featuring a custom Keras CNN 
 - pip (Python package installer)
 - trained models
 
-───────────────────────────────────────────────
 
-✅ Step-by-Step Setup
+ **Setup**
 
 1. Clone the Repository:
    git clone https://github.com/Randomrug/SkinSpy.git
@@ -66,7 +62,7 @@ This system uses a dual-model cascade architecture featuring a custom Keras CNN 
 9. Open the App in Your Browser:
    Go to: http://127.0.0.1:5000
 
-───────────────────────────────────────────────
+
 
 🧠 What This App Does
 
@@ -81,7 +77,7 @@ This system uses a dual-model cascade architecture featuring a custom Keras CNN 
   - No Bites
 - Displays a dynamic result verdict with suggestions and links on the medical information regarding the predicted outcome.
 
-───────────────────────────────────────────────
+
 
 📝 Notes
 
@@ -90,7 +86,7 @@ This system uses a dual-model cascade architecture featuring a custom Keras CNN 
 
 🧪 This project is for **awareness and educational use** only. It is **not a diagnostic tool**. Always consult a real doctor.
 
-───────────────────────────────────────────────
+___________________________________________________
 
 🙌 Credits to myself(😂😄)
 
